@@ -1,5 +1,6 @@
 require 'thor'
 require 'squill/squill_file'
+require 'squill/squill_file_searcher'
 
 module Squill
   class CLIClient < Thor
@@ -55,7 +56,9 @@ module Squill
     RUN_DESC
     def print(name)
       squill_file = Squill::SquillFile.new(name)
-      puts squill_file.sql_content
+      if squill_file.exists_as_squill_file?
+        puts squill_file.sql_content
+      end
     end
     map "p" => "print"
 
@@ -69,7 +72,11 @@ module Squill
       `squill search some_table`
     SEARCH_DESC
     def search(search_string)
-      Squill::SquillFileSearcher.search(search_string)
+      searcher = Squill::SquillFileSearcher.new
+      results = searcher.search(search_string)
+      results.each { |result|
+        puts "#{result.name} - #{result.description}"
+      }
     end
     map "s" => "search"
 
