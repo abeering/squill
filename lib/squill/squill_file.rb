@@ -6,6 +6,17 @@ module Squill
     def initialize(name)
       ensure_squill_dir
       @name = name
+      if exists_as_squill_file?
+        load_from_squill_file
+      end
+    end
+
+    def load_from_squill_file
+      orig_file = File.open(squill_file, "r")
+      content = orig_file.read
+      @description = content.match(/#Description: (.+?)\n/m)[1]
+      @sql = content.match(/#SQL:\n(.+?)#ENDSQL;/m)[1]
+      orig_file.close
     end
 
     def exists_as_squill_file?
@@ -28,15 +39,8 @@ module Squill
       write_file
     end
 
-    def sql_content
-      file = File.open(squill_file,'r')
-      in_sql = false
-      sql = ""
-      file.each_line { |line|
-        sql << line if in_sql
-        in_sql = true if line.match(/^# SQL:/)
-      }
-      sql
+    def yaml
+      { name: @name, description: @description, sql: @sql }
     end
 
     private
@@ -45,8 +49,8 @@ module Squill
       file = File.open(tempfile, "w")
       file.write <<-SQL_TEMPLATE
 
-# END SQL
-# Insert SQL to be added to squill above these lines
+#ENDSQL;
+# Insert SQL to be added to squill above these commented lines
       SQL_TEMPLATE
       file.close
     end
@@ -55,7 +59,7 @@ module Squill
       file = File.open(tempfile, "r")
       sql = ""
       file.each_line { |line|
-        break if line.match(/^# END SQL/)
+        break if line.match(/^#ENDSQL;/)
         sql << line
       }
       file.close
@@ -74,10 +78,11 @@ module Squill
 
     def contents_for_squill_file_write
       <<-OUTPUT_FILE
-# Name: #{@name}
-# Description: #{@description}
-# SQL:
+#Name: #{@name}
+#Description: #{@description}
+#SQL:
 #{@sql}
+#ENDSQL;
       OUTPUT_FILE
     end
 

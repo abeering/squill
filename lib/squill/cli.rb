@@ -40,7 +40,8 @@ module Squill
       else
         squill_file.set_sql_from_file(file)
       end
-      squill_file.save
+      puts squill_file.yaml
+      #squill_file.save
       puts "saved squill."
     end
     map "a" => "add"
@@ -57,7 +58,7 @@ module Squill
     def print(name)
       squill_file = Squill::SquillFile.new(name)
       if squill_file.exists_as_squill_file?
-        puts squill_file.sql_content
+        puts squill_file.sql
       end
     end
     map "p" => "print"
@@ -75,7 +76,7 @@ module Squill
       searcher = Squill::SquillFileSearcher.new
       results = searcher.search(search_string)
       results.each { |result|
-        puts "#{result.name} - #{result.description}"
+        puts "#{result[:name_highlight]} - #{result[:description_highlight]}"
       }
     end
     map "s" => "search"
