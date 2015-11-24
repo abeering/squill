@@ -41,7 +41,7 @@ module Squill
         squill_file.set_sql_from_file(file)
       end
       squill_file.save
-      puts "\nsaved squill #{name} to #{squill_file.squill_file}.\n"
+      puts "\nsaved squill #{name}.\n"
     end
     map "a" => "add"
 

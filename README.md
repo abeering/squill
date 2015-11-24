@@ -62,6 +62,17 @@ Printing the SQL associated with the squill:
     $ squill p some-sql
     $ squill p some-sql | psql
 
+### Listing All Squills
+
+If you're having a hard time finding what you want sometimes its best to just list them all and stare blankly at your screen for a while.
+
+    $ squill list
+
+### Deleting Squills
+
+Eventually you wont need that SQL ever again.  Lucky you.
+
+    $ squill delete i-wish-it-was-all-of-them
 
 ## Contributing
 
