@@ -2,14 +2,19 @@ module Squill
   class SquillFileSearcher
 
     def search(search_string)
-      grep_results = `egrep -l '^#(Description|Name):.*#{search_string}.*$' #{search_argument}`
-      grep_results.split('\n').map { |result|
+      grep_results = `egrep -l '^#(Description|Name):.*#{search_string}.*$' #{search_argument} | sort`
+      grep_results.split("\n").map { |result|
         squillfile = Squill::SquillFile.new(File.basename(result.strip).gsub(/.squill/,''))
         {
           name_highlight: highlight(squillfile.name, search_string),
           description_highlight: highlight(squillfile.description, search_string)
         }
       }
+    end
+
+    def list
+      results = `find #{squill_search_dir} -type f -name '*.squill' | sort`
+      results.split("\n").map { |result| Squill::SquillFile.new(File.basename(result.strip).gsub(/.squill/,'')) }
     end
 
     private

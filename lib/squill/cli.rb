@@ -31,7 +31,7 @@ module Squill
     def add(name, file=nil)
       squill_file = Squill::SquillFile.new(name)
       if squill_file.exists_as_squill_file? && !options[:replace]
-        puts "a squill by this name already exists. use the the --replace option to replace it."
+        puts "\na squill by this name already exists. use the the --replace option to replace it.\n"
         return
       end
       squill_file.description = options[:desc].nil? ? ask("Briefly describe #{name}: ") : options[:desc]
@@ -40,9 +40,8 @@ module Squill
       else
         squill_file.set_sql_from_file(file)
       end
-      puts squill_file.yaml
-      #squill_file.save
-      puts "saved squill."
+      squill_file.save
+      puts "\nsaved squill #{name} to #{squill_file.squill_file}.\n"
     end
     map "a" => "add"
 
@@ -78,8 +77,48 @@ module Squill
       results.each { |result|
         puts "#{result[:name_highlight]} - #{result[:description_highlight]}"
       }
+      puts "\nfound #{results.length} squills.\n"
     end
     map "s" => "search"
+
+    desc "delete <name>", "Deletes squill with name matching <name>."
+    long_desc <<-DELETE_DESC
+    Deletes squill matching <name>.
+
+    Example:
+
+      `squill delete some-sql`
+    DELETE_DESC
+    def delete(name)
+      squill_file = Squill::SquillFile.new(name)
+      if squill_file.exists_as_squill_file?
+        if yes?("are you sure you want to delete #{name}?")
+          squill_file.delete
+          puts "\nsquill #{name} deleted.\n"
+        end
+      else
+        puts "\ncould not find squill named #{name} to delete.\n"
+      end
+    end
+    map "d" => "delete"
+
+    desc "list", "Lists all squills."
+    long_desc <<-LIST_DESC
+    Lists all available squills.
+
+    Example:
+
+      `squill list`
+    LIST_DESC
+    def list
+      searcher = Squill::SquillFileSearcher.new
+      results = searcher.list
+      results.each { |result|
+        puts "#{result.name} - #{result.description}"
+      }
+      puts "\nlisted #{results.length} squills.\n"
+    end
+    map "l" => "list"
 
   end
 end

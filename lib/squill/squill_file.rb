@@ -39,6 +39,10 @@ module Squill
       write_file
     end
 
+    def delete
+      File.delete(squill_file)
+    end
+
     def yaml
       { name: @name, description: @description, sql: @sql }
     end
