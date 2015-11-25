@@ -2,6 +2,15 @@
 
 A very lightweight tool for storing, searching and executing ad-hoc SQL.
 
+## Overview
+
+    $ squill add get-thingamajig-counts -d 'retrieve counts of of thingamajigs grouped by whatchamacallits'
+    $ squill search thingamajig
+      get-thingamajig-counts - retrieve counts of of thingamajigs grouped by whatchamacallits
+
+      found 1 squills.
+    $ squill print get-thingamajig-counts | psql
+
 ## Installation
 
     $ gem install squill
